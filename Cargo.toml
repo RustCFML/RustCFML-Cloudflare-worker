@@ -7,19 +7,12 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-worker = "0.8"
-cfml-common   = { git = "https://github.com/RustCFML/RustCFML", tag = "v0.15.0" }
-cfml-compiler = { git = "https://github.com/RustCFML/RustCFML", tag = "v0.15.0" }
-cfml-codegen  = { git = "https://github.com/RustCFML/RustCFML", tag = "v0.15.0" }
-cfml-vm       = { git = "https://github.com/RustCFML/RustCFML", tag = "v0.15.0" }
-cfml-stdlib   = { git = "https://github.com/RustCFML/RustCFML", tag = "v0.15.0", default-features = false }
-serde_json = "1"
-indexmap = "2"
-url = "2"
+worker = { version = "0.8", features = ["d1"] }
+cfml-worker = { path = "../RustCFML/crates/cfml-worker" }
 
 # uuid is a transitive dep of cfml-vm (v4 feature). On wasm32-unknown-unknown
-# uuid requires an explicit random source; adding it here merges the `js` feature
-# into the unified build so the crate compiles.
+# uuid requires an explicit random source; adding it here merges the `js`
+# feature into the unified build so the crate compiles.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid   = { version = "1", features = ["v4", "js"] }
 js-sys = "0.3"

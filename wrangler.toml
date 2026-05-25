@@ -4,3 +4,29 @@ compatibility_date = "2024-09-23"
 
 [build]
 command = "cargo install -q worker-build && worker-build --release"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Optional bindings — cfml-worker reads these by id and wires them into
+# the corresponding CFML scopes. Uncomment and fill in once you've created
+# the resources with `wrangler kv:namespace create SESSIONS` etc.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Session scope persists across isolates when this binding is present.
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = "..."
+
+# Application scope persists across isolates when this binding is present.
+# Note that strong consistency for `onApplicationStart` is best-effort —
+# move to a Durable Object if you need single-writer semantics.
+# [[kv_namespaces]]
+# binding = "APPLICATION"
+# id = "..."
+
+# D1 datasource for <cfquery datasource="main">. v1 status: registration
+# wired but execution returns a "not supported in v1" error — see
+# crates/cfml-worker/src/d1_driver.rs for the async/sync gap.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "rustcfml-worker"
+# database_id = "..."

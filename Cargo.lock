@@ -214,8 +214,7 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -225,21 +224,22 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "indexmap",
+ "js-sys",
  "log",
  "num-traits",
  "parking_lot",
  "rustc-hash",
+ "serde",
  "thiserror",
+ "wasm-bindgen",
 ]
 
 [[package]]
 name = "cfml-compiler"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "cfml-common",
  "log",
@@ -248,8 +248,7 @@ dependencies = [
 
 [[package]]
 name = "cfml-config"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "indexmap",
  "log",
@@ -260,8 +259,7 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "aes",
  "blowfish",
@@ -285,8 +283,7 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.15.0"
-source = "git+https://github.com/RustCFML/RustCFML?tag=v0.15.0#b9145326411af2a86d048ce57ef390fc5a3b9584"
+version = "0.18.0"
 dependencies = [
  "anyhow",
  "cfml-codegen",
@@ -298,8 +295,29 @@ dependencies = [
  "parking_lot",
  "regex",
  "rust_decimal",
+ "serde",
  "serde_json",
  "thiserror",
+ "uuid",
+]
+
+[[package]]
+name = "cfml-worker"
+version = "0.18.0"
+dependencies = [
+ "cfml-codegen",
+ "cfml-common",
+ "cfml-compiler",
+ "cfml-config",
+ "cfml-stdlib",
+ "cfml-vm",
+ "indexmap",
+ "js-sys",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "worker",
 ]
 
 [[package]]
@@ -1096,15 +1114,8 @@ checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 name = "rustcfml-worker"
 version = "0.1.0"
 dependencies = [
- "cfml-codegen",
- "cfml-common",
- "cfml-compiler",
- "cfml-stdlib",
- "cfml-vm",
- "indexmap",
+ "cfml-worker",
  "js-sys",
- "serde_json",
- "url",
  "uuid",
  "worker",
 ]
