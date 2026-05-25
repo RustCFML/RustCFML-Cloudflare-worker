@@ -1,5 +1,9 @@
 name = "rustcfml-worker"
-main = "build/worker/shim.mjs"
+# Custom JSPI shim wraps the worker-build wasm export with WebAssembly.promising
+# and supplies the cfml_jspi_d1_query Suspending import so <cfquery> against D1
+# bindings works. If you remove this and revert to "build/worker/shim.mjs",
+# cfquery will return a runtime error pointing back here.
+main = "src/jspi-shim.mjs"
 compatibility_date = "2024-09-23"
 
 [build]
@@ -23,10 +27,13 @@ command = "cargo install -q worker-build && worker-build --release"
 # binding = "APPLICATION"
 # id = "..."
 
-# D1 datasource for <cfquery datasource="main">. v1 status: registration
-# wired but execution returns a "not supported in v1" error — see
-# crates/cfml-worker/src/d1_driver.rs for the async/sync gap.
+# D1 datasource for <cfquery datasource="main"> in cfml/d1.cfm. The binding
+# name on env (here "MAIN") is matched case-insensitively against the
+# datasource string from CFML. Create + populate the DB with:
+#   wrangler d1 create rustcfml-worker
+#   wrangler d1 execute MAIN --command="CREATE TABLE things (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)"
+# Then drop the returned database_id into the line below and uncomment.
 # [[d1_databases]]
-# binding = "DB"
+# binding = "MAIN"
 # database_name = "rustcfml-worker"
 # database_id = "..."

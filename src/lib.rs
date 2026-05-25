@@ -21,7 +21,7 @@ pub async fn main(req: Request, env: Env, ctx: Context) -> Result<Response> {
     if let Ok(kv) = env.kv("APPLICATION") {
         config.kv_application = Some(kv);
     }
-    if let Ok(db) = env.d1("DB") {
+    if let Ok(db) = env.d1("MAIN") {
         config.d1_datasources.push(("main".into(), Arc::new(db)));
     }
 
