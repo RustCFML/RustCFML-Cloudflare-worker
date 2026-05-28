@@ -1,51 +1,65 @@
 <cfscript>
-    greeter  = new components.Greeter( url.name ?: "World" );
-    greeting = greeter.greet();
-    formal   = greeter.greetFormal();
-    facts    = greeter.getFacts();
-    nameVal  = encodeForHTMLAttribute( url.name ?: "" );
-
-    factItems = "";
-    for ( f in facts ) {
-        factItems &= "<li>" & f & "</li>";
-    }
+    request.pageTitle = "Live demo dashboard";
+    request.activeNav = "";
 </cfscript>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RustCFML Worker</title>
-  <style>
-    body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 2rem; max-width: 720px; margin: 0 auto; }
-    h1 { font-size: 2rem; color: #f6821f; }
-    h2 { color: #94a3b8; font-size: 1rem; font-weight: 400; margin-top: 0; }
-    ul { line-height: 2; }
-    li::marker { color: #f6821f; }
-    .meta { color: #475569; font-size: 0.85rem; margin-top: 2rem; border-top: 1px solid #1e293b; padding-top: 1rem; }
-    nav a { color: #64748b; text-decoration: none; margin-right: 1.5rem; }
-    nav a:hover { color: #f6821f; }
-    form { margin-top: 1.5rem; display: flex; gap: 0.75rem; }
-    input { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 0.5rem 1rem; border-radius: 6px; font-size: 1rem; }
-    button { background: #f6821f; border: none; color: white; padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 1rem; cursor: pointer; }
-  </style>
-</head>
-<body>
-  <nav><a href="/">Home</a><a href="/about">About</a></nav>
+<cfinclude template="includes/header.cfm">
+<cfoutput>
 
-  <cfoutput>
-  <h1>#greeting#</h1>
-  <h2>#formal#</h2>
+<div class="panel">
+    <div class="panel-header">Welcome</div>
+    <div class="panel-body">
+        <p>This worker runs a CFML interpreter (RustCFML, compiled to WebAssembly)
+        on Cloudflare's edge. The pages linked below each exercise a different
+        slice of the integration: lazy session storage in Workers KV,
+        Durable-Object-backed application scope, and synchronous-from-CFML
+        SQL queries against a Cloudflare D1 database via JSPI.</p>
+        <p>Edge: <strong>#cgi.cf_ray ?: "(unknown)"#</strong>
+        &middot; rendered at <strong>#dateTimeFormat(now(), "yyyy-mm-dd HH:nn:ss")#</strong></p>
+    </div>
+</div>
 
-  <h3>Facts</h3>
-  <ul>#factItems#</ul>
+<div class="cards">
+    <div class="card">
+        <h3>/static.cfm <span class="tag">no cookie</span></h3>
+        <div class="meta">Lazy session — no write</div>
+        <p>A page that never touches the <code>session</code> scope. With
+        <code>this.lazySessionCreation = true</code> the engine skips KV
+        inserts, skips <code>onSessionStart</code>, and skips
+        <code>Set-Cookie</code> entirely.</p>
+        <a class="go" href="/static.cfm">Open /static.cfm &rarr;</a>
+    </div>
+    <div class="card">
+        <h3>/session.cfm <span class="tag">greeter</span></h3>
+        <div class="meta">Remember-me flow</div>
+        <p>Asks for your name on first visit and greets you back on
+        subsequent ones. The form submission writes <code>session.greetName</code>,
+        which triggers lazy-init: KV record created, <code>onSessionStart</code>
+        fires, cookie issued. Anonymous visits stay zero-cost.</p>
+        <a class="go" href="/session.cfm">Open /session.cfm &rarr;</a>
+    </div>
+    <div class="card">
+        <h3>/cfml.cfm <span class="tag">language</span></h3>
+        <div class="meta">Engine sampler</div>
+        <p>Quick rendering of the same examples shown in the wasm
+        playground: variables, arrays with higher-order functions, structs,
+        closures, fibonacci, fizzbuzz. All running server-side.</p>
+        <a class="go" href="/cfml.cfm">Open /cfml.cfm &rarr;</a>
+    </div>
+</div>
 
-  <form method="get" action="/">
-    <input type="text" name="name" placeholder="Enter your name" value="#nameVal#">
-    <button type="submit">Greet me</button>
-  </form>
-  </cfoutput>
+<div class="panel">
+    <div class="panel-header">Live application scope (DO-backed)</div>
+    <div class="panel-body">
+        <p>Application scope is stored in a single Durable Object instance per
+        application name. All isolates and regions see the same value, so
+        the counter below increments monotonically regardless of which edge
+        node serves you.</p>
+        <dl class="kv">
+            <dt>application.startedAt</dt><dd>#application.startedAt#</dd>
+            <dt>application.requestCount</dt><dd>#application.requestCount#</dd>
+        </dl>
+    </div>
+</div>
 
-  <div class="meta">RustCFML on Cloudflare Workers &middot; timing via <code>wrangler tail</code></div>
-</body>
-</html>
+</cfoutput>
+<cfinclude template="includes/footer.cfm">

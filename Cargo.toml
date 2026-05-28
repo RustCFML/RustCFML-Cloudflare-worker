@@ -1,24 +1,31 @@
 [package]
-name = "rustcfml-worker"
+name = "rustcfml-worker-host"
 version = "0.1.0"
 edition = "2021"
+authors = ["RustCFML Team"]
+license = "MIT"
+description = "Reference Cloudflare Workers host wiring for cfml-worker — fetch + scheduled + Durable Object."
+build = "build.rs"
+
+# Standalone (not a workspace member): the host crate is wasm32-only,
+# so it shouldn't gate `cargo build` on the native target.
+[workspace]
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-worker = { version = "0.8", features = ["d1"] }
-cfml-worker = { path = "../RustCFML/crates/cfml-worker" }
+cfml-worker = { git = "https://github.com/RustCFML/RustCFML.git", tag = "v0.20.1" }
 
-# uuid is a transitive dep of cfml-vm (v4 feature). On wasm32-unknown-unknown
-# uuid requires an explicit random source; adding it here merges the `js`
-# feature into the unified build so the crate compiles.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-uuid   = { version = "1", features = ["v4", "js"] }
-js-sys = "0.3"
+worker = { version = "0.8", features = ["d1"] }
+worker-macros = "0.8"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [profile.release]
+opt-level = "s"
 lto = true
 strip = true
-codegen-units = 1
-opt-level = "z"

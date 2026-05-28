@@ -1,51 +1,53 @@
+//! Walks `cfml/` and emits a Rust source file with a single
+//! `pub static CFML_FILES: &[(&str, &[u8])]` table the lib uses to
+//! seed `cfml_worker::embedded_vfs::EmbeddedVfs`.
+
+use std::env;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn main() {
-    let out_dir = std::env::var("OUT_DIR").unwrap();
-    let cfml_dir = Path::new("cfml");
+    println!("cargo:rerun-if-changed=cfml");
 
-    if !cfml_dir.exists() {
-        fs::write(
-            format!("{out_dir}/cfml_files.rs"),
-            "pub static CFML_FILES: &[(&str, &[u8])] = &[];\n",
-        )
-        .unwrap();
-        return;
+    let root: PathBuf = env::current_dir().expect("cwd").join("cfml");
+    let mut entries: Vec<(String, PathBuf)> = Vec::new();
+    if root.exists() {
+        walk(&root, &root, &mut entries);
     }
-
-    let mut entries: Vec<(String, String)> = Vec::new();
-    walk_dir(cfml_dir, cfml_dir, &mut entries);
     entries.sort_by(|a, b| a.0.cmp(&b.0));
 
-    let mut code = String::from("pub static CFML_FILES: &[(&str, &[u8])] = &[\n");
-    for (rel_path, abs_path) in &entries {
-        code.push_str(&format!(
-            "    ({rel_path:?}, include_bytes!({abs_path:?})),\n"
+    let out_dir = env::var("OUT_DIR").expect("OUT_DIR");
+    let dest = Path::new(&out_dir).join("embedded_files.rs");
+
+    let mut src = String::new();
+    src.push_str("pub static CFML_FILES: &[(&str, &[u8])] = &[\n");
+    for (rel, abs) in &entries {
+        // Embedded paths are virtual-root–relative; cfml-worker prefixes
+        // them with `WorkerConfig.virtual_root` at lookup time.
+        let abs_str = abs.to_string_lossy().replace('\\', "/");
+        src.push_str(&format!(
+            "    ({:?}, include_bytes!({:?})),\n",
+            rel, abs_str
         ));
     }
-    code.push_str("];\n");
+    src.push_str("];\n");
 
-    fs::write(format!("{out_dir}/cfml_files.rs"), &code).unwrap();
-
-    // Re-run whenever any file under cfml/ changes
-    println!("cargo:rerun-if-changed=cfml/");
+    fs::write(dest, src).expect("write embedded_files.rs");
 }
 
-fn walk_dir(base: &Path, dir: &Path, entries: &mut Vec<(String, String)>) {
-    let Ok(iter) = fs::read_dir(dir) else { return };
-    for entry in iter.flatten() {
+fn walk(base: &Path, dir: &Path, out: &mut Vec<(String, PathBuf)>) {
+    let Ok(rd) = fs::read_dir(dir) else { return };
+    for entry in rd.flatten() {
         let path = entry.path();
         if path.is_dir() {
-            walk_dir(base, &path, entries);
+            walk(base, &path, out);
         } else if path.is_file() {
-            let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-            if matches!(ext, "cfm" | "cfc" | "cfml") {
-                let rel = path.strip_prefix(base).unwrap();
-                let rel_str = rel.to_string_lossy().replace('\\', "/");
-                let abs_str = path.canonicalize().unwrap().to_string_lossy().to_string();
-                entries.push((rel_str, abs_str));
-            }
+            let rel = path
+                .strip_prefix(base)
+                .unwrap_or(&path)
+                .to_string_lossy()
+                .replace('\\', "/");
+            out.push((rel, path));
         }
     }
 }

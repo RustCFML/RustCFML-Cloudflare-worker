@@ -1,39 +1,41 @@
 name = "rustcfml-worker"
-# Custom JSPI shim wraps the worker-build wasm export with WebAssembly.promising
-# and supplies the cfml_jspi_d1_query Suspending import so <cfquery> against D1
-# bindings works. If you remove this and revert to "build/worker/shim.mjs",
-# cfquery will return a runtime error pointing back here.
-main = "src/jspi-shim.mjs"
-compatibility_date = "2024-09-23"
+main = "build/worker/shim.mjs"
+compatibility_date = "2026-05-25"
+compatibility_flags = ["nodejs_compat"]
+
+# JSPI is enabled by default on the Workers runtime. No flag needed.
 
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+command = "cargo install -q worker-build && worker-build --release && node jspi-patch.mjs"
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Optional bindings — cfml-worker reads these by id and wires them into
-# the corresponding CFML scopes. Uncomment and fill in once you've created
-# the resources with `wrangler kv:namespace create SESSIONS` etc.
-# ─────────────────────────────────────────────────────────────────────────────
+# ─── KV namespaces ─────────────────────────────────────────────────────
+# Create these via `wrangler kv namespace create SESSIONS` and paste the
+# returned id. The "APP" namespace is only consulted if APP_DO is absent.
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "223c20eab7a6480d9fed2d75d4914c76"
 
-# Session scope persists across isolates when this binding is present.
-# [[kv_namespaces]]
-# binding = "SESSIONS"
-# id = "..."
+[[kv_namespaces]]
+binding = "APP"
+id = "e58be0bb9afc4909b064a75e689831a7"
 
-# Application scope persists across isolates when this binding is present.
-# Note that strong consistency for `onApplicationStart` is best-effort —
-# move to a Durable Object if you need single-writer semantics.
-# [[kv_namespaces]]
-# binding = "APPLICATION"
-# id = "..."
+# ─── Durable Object (strong-consistency application scope) ────────────
+[[durable_objects.bindings]]
+name = "APP_DO"
+class_name = "ApplicationScopeDO"
 
-# D1 datasource for <cfquery datasource="main"> in cfml/d1.cfm. The binding
-# name on env (here "MAIN") is matched case-insensitively against the
-# datasource string from CFML. Create + populate the DB with:
-#   wrangler d1 create rustcfml-worker
-#   wrangler d1 execute MAIN --command="CREATE TABLE things (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)"
-# Then drop the returned database_id into the line below and uncomment.
-# [[d1_databases]]
-# binding = "MAIN"
-# database_name = "rustcfml-worker"
-# database_id = "..."
+[[migrations]]
+tag = "v1"
+new_classes = ["ApplicationScopeDO"]
+
+# D1 binding intentionally not declared here. <cfquery> via JSPI is
+# wired in cfml-worker but does not function on the Cloudflare runtime
+# yet — see the commit history (Add RustCFMLWorker host template) for
+# the architectural blocker. Re-add when fixed.
+
+# ─── Cron triggers ─────────────────────────────────────────────────────
+# Sweep expired KV sessions on a schedule. Tighten this to match your
+# session timeout if you care about prompt cleanup; loosen it (or remove
+# the trigger entirely) if you don't.
+[triggers]
+crons = ["*/30 * * * *"]

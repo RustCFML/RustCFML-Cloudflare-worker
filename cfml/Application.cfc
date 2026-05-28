@@ -1,25 +1,30 @@
 component {
-
-    this.name = "rustcfml-worker";
+    this.name              = "rustcfml-worker-demo";
     this.sessionManagement = true;
-    this.sessionTimeout = createTimeSpan( 0, 0, 30, 0 );
+    // Lazy session creation: no session record + no Set-Cookie until
+    // CFML actually writes to `session.X`. Eliminates per-request KV
+    // overhead for static-style pages.
+    this.lazySessionCreation = true;
+    this.sessionTimeout    = createTimeSpan(0, 0, 5, 0); // 5 minutes
+    this.applicationTimeout = createTimeSpan(1, 0, 0, 0);
 
-    public boolean function onApplicationStart() {
+    function onApplicationStart() {
         application.startedAt = now();
-        application.hitCounter = 0;
+        application.requestCount = 0;
         return true;
     }
 
-    public boolean function onSessionStart() {
-        session.startedAt = now();
-        session.pageViews = 0;
-        return true;
+    function onSessionStart() {
+        session.createdAt = now();
+        session.hits = 0;
     }
 
-    public boolean function onRequestStart( required string targetPage ) {
-        application.hitCounter = ( application.hitCounter ?: 0 ) + 1;
-        session.pageViews     = ( session.pageViews     ?: 0 ) + 1;
-        return true;
-    }
+    // Note: onSessionEnd is NOT supported in the Cloudflare deployment.
+    // The scheduled handler only tidies up expired session blobs in KV;
+    // it does not load Application.cfc or invoke lifecycle methods.
 
+    function onRequest(targetPage) {
+        application.requestCount = (application.requestCount ?: 0) + 1;
+        include "#targetPage#";
+    }
 }
