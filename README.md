@@ -69,13 +69,21 @@ handy for isolating JSPI plumbing from CFML semantics when debugging.
    wrangler kv namespace create APP
    ```
 3. (Optional) Provision Hyperdrive bindings for the databases you want
-   `<cfquery>` to reach. Declare only the engines you actually use:
+   `<cfquery>` to reach. Declare only the engines you actually use.
+
+   Hyperdrive stores the connection string **encrypted on Cloudflare** and
+   hands back an `id`. Only that `id` goes in `wrangler.toml` — the
+   credentials never touch the repo. Let wrangler prompt for the
+   connection string interactively so the password stays out of your shell
+   history:
    ```bash
-   wrangler hyperdrive create rustcfml-pg \
-     --connection-string="postgres://user:pass@host:5432/dbname"
-   wrangler hyperdrive create rustcfml-mysql \
-     --connection-string="mysql://user:pass@host:3306/dbname"
+   wrangler hyperdrive create rustcfml-pg      # prompts for the connection string
+   wrangler hyperdrive create rustcfml-mysql
    ```
+   (Or pass `--connection-string="postgres://user:pass@host:5432/dbname"`
+   non-interactively in CI, sourcing the value from a secret store rather
+   than typing it inline.)
+
    Uncomment the matching `[[hyperdrive]]` blocks in `wrangler.toml` and
    paste the returned ids. CFML datasource names map 1:1 to the binding
    names (`HYPERDRIVE_PG`, `HYPERDRIVE_MYSQL`).
