@@ -15,10 +15,10 @@ build = "build.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-cfml-worker = { git = "https://github.com/RustCFML/RustCFML.git", tag = "v0.20.1" }
+cfml-worker = { git = "https://github.com/RustCFML/RustCFML.git", tag = "v0.34.1" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-worker = { version = "0.8", features = ["d1"] }
+worker = "0.8"
 worker-macros = "0.8"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"

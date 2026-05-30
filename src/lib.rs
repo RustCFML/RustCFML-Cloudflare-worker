@@ -41,11 +41,18 @@ fn build_config(env: &Env) -> cfml_worker::WorkerConfig {
         config.do_application = Some(ns);
     }
 
-    // D1 datasource registration is intentionally disabled. <cfquery>
-    // via JSPI is wired but currently hangs on the Cloudflare runtime
-    // because #[event(fetch)] (wasm-bindgen-futures) breaks the
-    // contiguous-wasm-stack requirement of WebAssembly.promising.
-    // Re-enable when the entry-point side is reworked.
+    // Hyperdrive datasources. Each binding name is exposed to CFML as the
+    // `datasource="..."` attribute on <cfquery>. The JS shim sniffs the
+    // binding's connectionString prefix (`postgres://` vs `mysql://`) and
+    // dispatches via postgres.js or mysql2/promise accordingly.
+    for name in ["HYPERDRIVE_PG", "HYPERDRIVE_MYSQL"] {
+        if let Ok(binding) = env.hyperdrive(name) {
+            config
+                .hyperdrive_datasources
+                .push((name.to_string(), std::sync::Arc::new(binding)));
+        }
+    }
+
     config
 }
 
@@ -53,6 +60,33 @@ fn build_config(env: &Env) -> cfml_worker::WorkerConfig {
 pub async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
     let config = build_config(&env);
     cfml_worker::handle_fetch(req, env, ctx, &config).await
+}
+
+// Re-export the JSPI smoke-test entry points so wasm-opt doesn't drop them.
+// The post-build patch wraps `cfml_worker_jspi_smoke` in
+// `WebAssembly.promising` and exposes it on `globalThis.__cfmlJspi.smoke`
+// to validate that JSPI suspend/resume works from a clean sync wasm
+// activation (i.e. without going through the wasm-bindgen-futures-driven
+// `#[event(fetch)]`).
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn cfml_worker_jspi_smoke() {
+    cfml_worker::jspi_smoke::cfml_worker_jspi_smoke();
+}
+
+#[wasm_bindgen]
+pub fn cfml_worker_jspi_smoke_take() -> String {
+    cfml_worker::jspi_smoke::cfml_worker_jspi_smoke_take()
+}
+
+// Sync VM runner. The post-build patch wraps this in
+// `WebAssembly.promising` and exposes it as `globalThis.__cfmlJspi.runSync`,
+// which the async `handle_fetch` invokes after staging a `RunContext`.
+// Re-exported here so wasm-opt keeps it in the final cdylib.
+#[wasm_bindgen]
+pub fn cfml_worker_run_sync() {
+    cfml_worker::sync_runner::cfml_worker_run_sync();
 }
 
 #[event(scheduled)]

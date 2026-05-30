@@ -12,7 +12,8 @@
         on Cloudflare's edge. The pages linked below each exercise a different
         slice of the integration: lazy session storage in Workers KV,
         Durable-Object-backed application scope, and synchronous-from-CFML
-        SQL queries against a Cloudflare D1 database via JSPI.</p>
+        SQL queries against Postgres or MySQL via Cloudflare Hyperdrive,
+        bridged through JSPI.</p>
         <p>Edge: <strong>#cgi.cf_ray ?: "(unknown)"#</strong>
         &middot; rendered at <strong>#dateTimeFormat(now(), "yyyy-mm-dd HH:nn:ss")#</strong></p>
     </div>
@@ -44,6 +45,14 @@
         playground: variables, arrays with higher-order functions, structs,
         closures, fibonacci, fizzbuzz. All running server-side.</p>
         <a class="go" href="/cfml.cfm">Open /cfml.cfm &rarr;</a>
+    </div>
+    <div class="card">
+        <h3>/db.cfm <span class="tag">hyperdrive</span></h3>
+        <div class="meta">SQL via Hyperdrive</div>
+        <p>Runs a tiny <code>SELECT</code> through Hyperdrive (Postgres or
+        MySQL) using the synchronous <code>&lt;cfquery&gt;</code> tag. The
+        async driver is bridged via JSPI, so CFML code stays sequential.</p>
+        <a class="go" href="/db.cfm">Open /db.cfm &rarr;</a>
     </div>
 </div>
 

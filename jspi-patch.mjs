@@ -1,104 +1,228 @@
 // Post-build patch: wrap the wasm `fetch` + `scheduled` exports in
 // WebAssembly.promising so that the JSPI Suspending imports
-// (cfml_jspi_d1_query, cfml_jspi_do_fetch) can suspend the wasm stack.
+// (cfml_jspi_hyperdrive_query, cfml_jspi_do_fetch) can suspend the wasm
+// stack, and bypass the wasm-bindgen JS adapter that otherwise hides the
+// Suspending from the wasm import object.
 //
-// worker-build (0.8.x) does not do this itself. The generated index.js
-// emits wrappers like:
-//
-//   function it(r,t,e){let n;return u(),n=s.fetch(o(r),o(t),o(e)),l(n)}
-//
-// We rewrite those into async wrappers that call the promising
-// version, await its resolution, and feed the result through the
-// jsval slot helper `l`.
+// Anchored against the worker-build 0.8.x **unminified** output shape
+// (NO_MINIFY=1). The build command must set NO_MINIFY so identifiers like
+// `wasm`, `addHeapObject`, `takeObject` stay literal.
 
 import { readFileSync, writeFileSync } from "node:fs";
 
 const path = "build/index.js";
 let src = readFileSync(path, "utf8");
 
-// Hoist a single promising wrapper per export.
-//
-// The init line we anchor to is `s.__wbindgen_start();` — present in
-// every wasm-bindgen output. We insert promising wrappers right after.
-const initAnchor = "s.__wbindgen_start();";
+// ─── 1. Hoist promising wrappers right after the **top-level**
+//        wasm-bindgen start call. The other occurrence inside __wbg_init
+//        would put the wrappers in function scope — useless. ─────────
+const initAnchor =
+  "var wasm = wasmInstance.exports;\nwasm.__wbindgen_start();";
 if (!src.includes(initAnchor)) {
-  console.error("jspi-patch: anchor `s.__wbindgen_start();` not found");
+  console.error(
+    "jspi-patch: top-level `var wasm = wasmInstance.exports; wasm.__wbindgen_start();` anchor not found",
+  );
   process.exit(1);
 }
+// `cfml_worker_jspi_smoke` is the wasm-bindgen-exported sync function from
+// crates/cfml-worker/src/jspi_smoke.rs. wasm-bindgen wraps the raw export
+// for arg marshalling; for JSPI we need the marshalled wrapper because the
+// args (u32 ptrs + lens) go through addHeapObject-style coercion. The JS
+// wrapper IS sync (no awaits between its entry and the wasm call), so
+// wrapping its underlying wasm function with promising still gives a
+// contiguous wasm stack from the wrapper call site.
 const wrappers =
-  "var __jspi_fetch=WebAssembly.promising(s.fetch);" +
-  "var __jspi_scheduled=WebAssembly.promising(s.scheduled);";
+  "\nvar __jspi_fetch=WebAssembly.promising(wasm.fetch);" +
+  "var __jspi_scheduled=WebAssembly.promising(wasm.scheduled);" +
+  "var __jspi_smoke=WebAssembly.promising(wasm.cfml_worker_jspi_smoke);" +
+  "var __jspi_run_sync=WebAssembly.promising(wasm.cfml_worker_run_sync);" +
+  "globalThis.__cfmlJspi=globalThis.__cfmlJspi||{};" +
+  // Smoke test entry — bypasses the fetch handler entirely.
+  "globalThis.__cfmlJspi.smoke=async function(env){" +
+  "  globalThis.__cfmlJspi.setEnv(env);" +
+  "  try { await __jspi_smoke(); }" +
+  "  finally { globalThis.__cfmlJspi.clearEnv(); }" +
+  "  return cfml_worker_jspi_smoke_take();" +
+  "};" +
+  // The async fetch handler stages a RunContext in a Rust thread-local,
+  // then awaits this. We invoke the promising-wrapped sync wasm export
+  // from JS so JSPI gets a contiguous wasm stack to suspend on for
+  // <cfquery> Suspending imports inside the VM.
+  "globalThis.__cfmlJspi.runSync=async function(){await __jspi_run_sync();};";
 src = src.replace(initAnchor, initAnchor + wrappers);
 
-// Find each `function NAME(r,...){let n;return u(),n=s.EXPORT(...),l(n)}`
-// and rewrite to async + await + use the promising wrapper.
+// ─── 2. Rewrite fetch / scheduled exports to await the promising wrapper ──
+//
+// Current (unminified) shape:
+//
+//   function fetch(req, env, ctx) {
+//     let ret;
+//     __wbg_call_guard();
+//     ret = wasm.fetch(addHeapObject(req), addHeapObject(env), addHeapObject(ctx));
+//     return takeObject(ret);
+//   }
+//
+// becomes:
+//
+//   async function fetch(req, env, ctx) {
+//     __wbg_call_guard();
+//     return takeObject(await __jspi_fetch(addHeapObject(req), addHeapObject(env), addHeapObject(ctx)));
+//   }
 function rewriteExport(exportName, promisingVar) {
-  // Use non-greedy `.*?` for the inner args so nested parens
-  // (`o(r),o(t),o(e)`) don't break the match.
   const re = new RegExp(
-    String.raw`function ([A-Za-z_$][\w$]*)\(([^)]*)\)\{let n;return u\(\),n=s\.` +
+    String.raw`function (` +
       exportName +
-      String.raw`\((.*?)\),l\(n\)\}`,
-    "g",
+      String.raw`)\(([^)]*)\)\s*\{\s*let ret;\s*__wbg_call_guard\(\);\s*ret = wasm\.` +
+      exportName +
+      String.raw`\((.*?)\);\s*return takeObject\(ret\);\s*\}`,
+    "s",
   );
-  let count = 0;
-  src = src.replace(re, (_m, fnName, params, args) => {
-    count++;
-    return `async function ${fnName}(${params}){u();return l(await ${promisingVar}(${args}))}`;
-  });
-  if (count === 0) {
-    console.error(`jspi-patch: no wrapper found for s.${exportName}`);
+  const m = src.match(re);
+  if (!m) {
+    console.error(`jspi-patch: no wrapper found for wasm.${exportName}`);
     process.exit(1);
   }
-  console.log(`jspi-patch: rewrote ${count} wrapper(s) for s.${exportName}`);
+  src = src.replace(
+    re,
+    `async function ${exportName}(${m[2]}){__wbg_call_guard();return takeObject(await ${promisingVar}(${m[3]}))}`,
+  );
+  console.log(`jspi-patch: rewrote wasm.${exportName} export → ${promisingVar}`);
 }
 
 rewriteExport("fetch", "__jspi_fetch");
 rewriteExport("scheduled", "__jspi_scheduled");
 
-// ────────────────────────────────────────────────────────────────────
-// Bypass the wasm-bindgen JS adapter for Suspending imports.
+// ─── 3. Bypass wasm-bindgen adapter for Suspending imports ──────────
 //
-// wasm-bindgen emits, for each snippet import (even ones that take
-// only primitives), a thin adapter:
+// wasm-bindgen emits a thin JS adapter for each snippet import:
 //
-//   __wbg_cfml_jspi_d1_query_HASH: function(t,e,n,i) {
-//       return Q(t>>>0, e>>>0, n>>>0, i>>>0)
-//   }
+//   __wbg_cfml_jspi_hyperdrive_query_HASH: function(arg0, ...) {
+//     const ret = cfml_jspi_hyperdrive_query(arg0 >>> 0, ...);
+//     return ret;
+//   },
 //
-// where `Q` is the `new WebAssembly.Suspending(async ...)` object. The
-// JS function call breaks JSPI: the wasm import sees a regular JS
-// function, not the Suspending — so the await inside never has
-// anywhere to suspend the wasm stack to. The whole request hangs.
-//
-// Fix: replace the adapter with a direct reference to the Suspending
-// variable. The arg values flowing across are i32/u32 pointers; the
-// >>> 0 conversions were defensive but the wasm side is already i32,
-// so dropping them is safe.
-// ────────────────────────────────────────────────────────────────────
+// The wasm import then sees a regular JS function, not the Suspending
+// object. The await inside has nowhere to suspend the wasm stack to and
+// the whole request hangs. Replace the adapter with a direct reference
+// to the Suspending variable.
 function bypassAdapter(importName, { required = false } = {}) {
   const re = new RegExp(
-    String.raw`(__wbg_` + importName + String.raw`_[0-9a-f]+):function\([^)]*\)\{return ([A-Za-z_$][\w$]*)\(.*?\)\}`,
+    String.raw`(__wbg_` +
+      importName +
+      String.raw`_[0-9a-f]+):\s*function\([^)]*\)\s*\{\s*const ret = ` +
+      importName +
+      String.raw`\([^)]*\);\s*return ret;\s*\}`,
     "g",
   );
   let count = 0;
-  src = src.replace(re, (_m, fullName, varName) => {
+  src = src.replace(re, (_m, fullName) => {
     count++;
-    return `${fullName}:${varName}`;
+    return `${fullName}:${importName}`;
   });
   if (count === 0) {
     if (required) {
       console.error(`jspi-patch: adapter for ${importName} not found`);
       process.exit(1);
     }
-    console.log(`jspi-patch: adapter for ${importName} absent (tree-shaken) — skipping`);
+    console.log(
+      `jspi-patch: adapter for ${importName} absent (tree-shaken) — skipping`,
+    );
     return;
   }
   console.log(`jspi-patch: bypassed wasm-bindgen adapter for ${importName}`);
 }
 
-bypassAdapter("cfml_jspi_d1_query", { required: true });
-bypassAdapter("cfml_jspi_do_fetch"); // optional — DO uses plain async
+bypassAdapter("cfml_jspi_hyperdrive_query", { required: true });
+bypassAdapter("cfml_jspi_do_fetch"); // optional — DO path uses plain async
+
+// ─── 3b. Wire setEnv/clearEnv around the Entrypoint.fetch dispatch ──
+//
+// The JSPI snippet looks up the active env on a `globalThis.__cfmlJspi`
+// hook so suspending callbacks (hyperdrive_query / do_fetch) can resolve
+// bindings by name. Inject the bracket calls around the wasm fetch call.
+const entryFetchAnchor =
+  "Entrypoint.prototype.fetch = function fetch2(arg) {\n  return fetch.call(this, arg, this.env, this.ctx);\n};";
+const entryFetchReplacement =
+  "Entrypoint.prototype.fetch = async function fetch2(arg) {\n" +
+  "  try {\n" +
+  "    const url = new URL(arg.url);\n" +
+  "    if (url.pathname === '/__cfml_smoke') {\n" +
+  "      const body = await globalThis.__cfmlJspi.smoke(this.env);\n" +
+  "      return new Response(body, { headers: { 'content-type': 'application/json' } });\n" +
+  "    }\n" +
+  "  } catch (e) {\n" +
+  "    return new Response('smoke error: ' + (e && e.stack || e), { status: 500 });\n" +
+  "  }\n" +
+  "  globalThis.__cfmlJspi && globalThis.__cfmlJspi.setEnv && globalThis.__cfmlJspi.setEnv(this.env);\n" +
+  "  try { return await fetch.call(this, arg, this.env, this.ctx); }\n" +
+  "  finally { globalThis.__cfmlJspi && globalThis.__cfmlJspi.clearEnv && globalThis.__cfmlJspi.clearEnv(); }\n" +
+  "};";
+if (!src.includes(entryFetchAnchor)) {
+  console.error("jspi-patch: Entrypoint.prototype.fetch anchor not found");
+  process.exit(1);
+}
+src = src.replace(entryFetchAnchor, entryFetchReplacement);
+console.log("jspi-patch: wired __cfmlJspi.setEnv around Entrypoint.fetch");
+
+// ─── 4. Rewrite CJS-style __require("node:*") / require("events") etc.
+//        to ESM namespace imports ─────────────────────────────────────
+//
+// esbuild keeps Node built-ins external (since we run with --platform=node)
+// but because the source files are CommonJS, it emits `__require("X")`
+// instead of a top-level `import * as ns from "X"`. The __require shim
+// throws at runtime in Workers ("Dynamic require of ... is not
+// supported"). Hoist each distinct external module to a real ESM
+// namespace import and rewrite the call sites.
+const NODE_BUILTINS = new Set([
+  "assert", "async_hooks", "buffer", "child_process", "console", "constants",
+  "crypto", "dns", "events", "fs", "http", "http2", "https", "net", "os",
+  "path", "perf_hooks", "process", "punycode", "querystring", "readline",
+  "stream", "string_decoder", "timers", "tls", "tty", "url", "util", "v8",
+  "vm", "worker_threads", "zlib",
+]);
+const requireRe = /__require\("([^"]+)"\)/g;
+const externalMods = new Set();
+let m;
+while ((m = requireRe.exec(src)) !== null) {
+  const mod = m[1];
+  const bare = mod.startsWith("node:") ? mod.slice(5) : mod;
+  if (NODE_BUILTINS.has(bare)) externalMods.add(mod);
+}
+if (externalMods.size > 0) {
+  // Each `import * as ns from "node:X"` yields a Module namespace with null
+  // prototype; CommonJS callers do `buf.hasOwnProperty(...)` etc. which then
+  // explodes. Convert each namespace to a plain Object (with Object.prototype)
+  // that merges the namespace + default export. That matches what CJS
+  // `require("node:X")` would have returned.
+  const importLines = [];
+  const tableEntries = [];
+  for (const mod of externalMods) {
+    const ident = "__cfml_ns_" + mod.replace(/[^a-z]/gi, "_");
+    importLines.push(`import * as ${ident} from "${mod}";`);
+    tableEntries.push(
+      `  "${mod}": Object.assign({}, ${ident}, (${ident}).default && typeof (${ident}).default === "object" ? (${ident}).default : {}),`,
+    );
+  }
+  const table =
+    `const __cfml_cjs = {\n${tableEntries.join("\n")}\n};\n`;
+  // Replace the throwing __require shim with one that consults the table.
+  const shimRe = /var __require = \/\* @__PURE__ \*\/ \(\(x\) => typeof require[\s\S]*?Error\('Dynamic require of "' \+ x \+ '" is not supported'\);\s*\}\);/;
+  const newShim =
+    table +
+    `var __require = (id) => {\n` +
+    `  if (id in __cfml_cjs) return __cfml_cjs[id];\n` +
+    `  throw new Error('Dynamic require of "' + id + '" is not supported');\n` +
+    `};`;
+  if (!shimRe.test(src)) {
+    console.error("jspi-patch: __require shim anchor not found");
+    process.exit(1);
+  }
+  src = src.replace(shimRe, newShim);
+  src = importLines.join("\n") + "\n" + src;
+  console.log(
+    `jspi-patch: hoisted ${externalMods.size} node require(s) into CJS-shape dispatch table — ${[...externalMods].join(", ")}`,
+  );
+}
 
 writeFileSync(path, src);
 console.log("jspi-patch: build/index.js patched");

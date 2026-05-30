@@ -10,3 +10,10 @@
 
 # Node dependencies (worker-build can drag these in)
 /node_modules/
+
+# OS / editor cruft
+.DS_Store
+**/.DS_Store
+*.swp
+.idea/
+.vscode/

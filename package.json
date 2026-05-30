@@ -1,0 +1,12 @@
+{
+  "name": "rustcfml-worker",
+  "private": true,
+  "description": "npm deps for the cfml-worker JSPI snippet. postgres.js and mysql2 are imported from the snippet at build time; esbuild bundles them into the worker.",
+  "dependencies": {
+    "mysql2": "^3.13.0",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}

@@ -9,13 +9,41 @@ Demonstrates:
 - Cron-driven KV tidy-up that deletes expired session blobs on a
   configurable schedule (`onSessionEnd` is **not** supported in the
   Cloudflare host — see notes below).
+- `<cfquery>` against Postgres or MySQL via Cloudflare Hyperdrive,
+  using JSPI to make the underlying async driver look synchronous to
+  CFML. Dispatched through `postgres` (postgres.js) or `mysql2/promise`,
+  selected from the Hyperdrive binding's `connectionString` prefix.
 
-**Not yet working:** `<cfquery>` against Cloudflare D1. The driver and
-JSPI plumbing are in `cfml-worker` but the suspending import hangs at
-runtime because `#[event(fetch)]` / `wasm-bindgen-futures` breaks the
-contiguous-wasm-stack requirement of `WebAssembly.promising`. The D1
-binding is intentionally absent from `wrangler.toml` until the
-entry-point side is reworked.
+## How `<cfquery>` works (JSPI architecture)
+
+`#[event(fetch)]` from `worker-macros` is async — `wasm-bindgen-futures`
+drives the request via a poll loop, with the original wasm fetch call
+returning a Promise handle to JS long before request work is done. That
+breaks the contiguous-wasm-stack requirement of `WebAssembly.promising`:
+Suspending imports invoked from inside the async-driven activation have
+no promising wrapper above them on the wasm stack and the request hangs.
+
+The fix in `cfml-worker` (introduced for Hyperdrive support):
+
+1. `handle_fetch` stays async. It does all the KV/DO worker-SDK awaits
+   needed to prime session and application scope before the VM runs.
+2. The VM execution is split off into a **separate sync wasm export**
+   (`cfml_worker_run_sync` in `cfml_worker::sync_runner`). It pops a
+   `RunContext` staged in a thread-local and runs the VM synchronously.
+3. The async handler invokes that export via a JS import that awaits
+   `WebAssembly.promising(wasm.cfml_worker_run_sync)`. That call site is
+   a *fresh* contiguous wasm activation — JSPI gets a clean stack to
+   suspend on when `<cfquery>` hits the Hyperdrive Suspending import.
+4. The post-build patch (`jspi-patch.mjs`) installs the promising wrapper
+   on `globalThis.__cfmlJspi.runSync`, bypasses the wasm-bindgen JS
+   adapter for the Suspending import, hoists CommonJS `__require("node:*")`
+   calls into real ESM imports (so `postgres` / `mysql2` bundle under
+   `nodejs_compat`), and wires `setEnv` / `clearEnv` around the fetch
+   entry.
+
+A smoke test at `/__cfml_smoke` bypasses the entire CFML execution and
+calls the Hyperdrive Suspending directly from a sync wasm activation —
+handy for isolating JSPI plumbing from CFML semantics when debugging.
 
 ## Layout
 
@@ -29,21 +57,28 @@ entry-point side is reworked.
 
 ## Setup
 
-1. Install `wrangler` and `worker-build`:
+1. Install `wrangler`, `worker-build`, and the npm dev deps:
    ```bash
    npm i -g wrangler
    cargo install worker-build
+   npm install        # pulls in `postgres` and `mysql2` for the JSPI snippet
    ```
 2. Provision KV namespaces:
    ```bash
    wrangler kv namespace create SESSIONS   # paste the returned id into wrangler.toml
    wrangler kv namespace create APP
    ```
-3. (Optional) Provision a D1 database:
+3. (Optional) Provision Hyperdrive bindings for the databases you want
+   `<cfquery>` to reach. Declare only the engines you actually use:
    ```bash
-   wrangler d1 create rustcfml-demo
+   wrangler hyperdrive create rustcfml-pg \
+     --connection-string="postgres://user:pass@host:5432/dbname"
+   wrangler hyperdrive create rustcfml-mysql \
+     --connection-string="mysql://user:pass@host:3306/dbname"
    ```
-   Uncomment the `[[d1_databases]]` block in `wrangler.toml` and paste the id.
+   Uncomment the matching `[[hyperdrive]]` blocks in `wrangler.toml` and
+   paste the returned ids. CFML datasource names map 1:1 to the binding
+   names (`HYPERDRIVE_PG`, `HYPERDRIVE_MYSQL`).
 4. Deploy:
    ```bash
    wrangler deploy

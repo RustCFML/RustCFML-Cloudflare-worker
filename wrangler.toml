@@ -6,7 +6,11 @@ compatibility_flags = ["nodejs_compat"]
 # JSPI is enabled by default on the Workers runtime. No flag needed.
 
 [build]
-command = "cargo install -q worker-build && worker-build --release && node jspi-patch.mjs"
+# ESBUILD_BIN points worker-build at our wrapper, which adds `--external:`
+# flags so postgres.js / mysql2 bundle cleanly under `nodejs_compat`.
+# NO_MINIFY keeps wasm-bindgen identifiers unmangled so jspi-patch.mjs can
+# find its anchor patterns by name.
+command = "cargo install -q worker-build && ESBUILD_BIN=$PWD/scripts/esbuild-wrapper.sh NO_MINIFY=1 worker-build --release && node jspi-patch.mjs"
 
 # ─── KV namespaces ─────────────────────────────────────────────────────
 # Create these via `wrangler kv namespace create SESSIONS` and paste the
@@ -28,10 +32,25 @@ class_name = "ApplicationScopeDO"
 tag = "v1"
 new_classes = ["ApplicationScopeDO"]
 
-# D1 binding intentionally not declared here. <cfquery> via JSPI is
-# wired in cfml-worker but does not function on the Cloudflare runtime
-# yet — see the commit history (Add RustCFMLWorker host template) for
-# the architectural blocker. Re-add when fixed.
+# ─── Hyperdrive (Postgres / MySQL) ────────────────────────────────────
+# Hyperdrive proxies a remote Postgres or MySQL database through
+# Cloudflare's edge connection pool. Create a config with:
+#
+#   wrangler hyperdrive create rustcfml-pg    --connection-string="postgres://user:pass@host:5432/db"
+#   wrangler hyperdrive create rustcfml-mysql --connection-string="mysql://user:pass@host:3306/db"
+#
+# Then paste the returned ids below. CFML sees these as
+# `<cfquery datasource="HYPERDRIVE_PG">` / `"HYPERDRIVE_MYSQL"`. Either
+# binding is optional — declare only the engines you actually use. The JS
+# shim sniffs the connectionString prefix to pick postgres.js vs mysql2.
+#
+[[hyperdrive]]
+binding = "HYPERDRIVE_PG"
+id = "0c6b5a5177464a6fa8b3df0880c39e69"
+
+# [[hyperdrive]]
+# binding = "HYPERDRIVE_MYSQL"
+# id = "<paste-id-here>"
 
 # ─── Cron triggers ─────────────────────────────────────────────────────
 # Sweep expired KV sessions on a schedule. Tighten this to match your
