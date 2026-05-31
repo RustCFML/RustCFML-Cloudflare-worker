@@ -1,4 +1,4 @@
-# rustcfml-worker
+# RustCFML Cloudflare Worker
 
 Reference Cloudflare Workers host wiring for [`cfml-worker`](../crates/cfml-worker).
 
