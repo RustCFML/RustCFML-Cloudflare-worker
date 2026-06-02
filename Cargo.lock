@@ -214,8 +214,8 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -225,8 +225,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "indexmap",
  "js-sys",
@@ -241,8 +241,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-compiler"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "cfml-common",
  "log",
@@ -251,8 +251,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-config"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "indexmap",
  "log",
@@ -263,8 +263,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "aes",
  "blowfish",
@@ -288,14 +288,15 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "anyhow",
  "cfml-codegen",
  "cfml-common",
  "cfml-compiler",
  "cfml-config",
+ "chrono",
  "indexmap",
  "log",
  "parking_lot",
@@ -309,8 +310,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.34.3"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.34.3#976dc850d1ba3c7711e41db7af473ce856b4aabc"
+version = "0.50.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
