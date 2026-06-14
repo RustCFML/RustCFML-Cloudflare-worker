@@ -1,5 +1,7 @@
 <cfparam name="request.pageTitle" default="RustCFML on Cloudflare Workers">
 <cfparam name="request.activeNav" default="">
+<cfinclude template="version.cfm">
+<cfparam name="request.rustCfmlVersion" default="unknown">
 <cfoutput>
 <!DOCTYPE html>
 <html lang="en">
@@ -283,7 +285,7 @@ table.q td { color: var(--text); font-family: var(--font-mono); }
 <div class="header">
     <img class="logo" src="https://rustcfml.github.io/RustCFML/demo/crab.svg" alt="RustCFML">
     <div>
-        <h1>Rust<span>CFML</span> <span style="font-size: 0.85rem; color: var(--text-dim); font-weight: 400;">on Cloudflare Workers</span></h1>
+        <h1>Rust<span>CFML</span> <span style="font-size: 0.85rem; color: var(--text-dim); font-weight: 400;">on Cloudflare Workers</span><span class="tag">v#request.rustCfmlVersion#</span></h1>
         <div class="subtitle">#request.pageTitle#</div>
     </div>
     <div class="links">

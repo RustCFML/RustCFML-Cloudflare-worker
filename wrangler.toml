@@ -5,12 +5,20 @@ compatibility_flags = ["nodejs_compat"]
 
 # JSPI is enabled by default on the Workers runtime. No flag needed.
 
+# Let Cloudflare place the Worker close to the resources it talks to
+# (e.g. Hyperdrive-backed databases) rather than the requesting eyeball.
+[placement]
+mode = "smart"
+
 [build]
 # ESBUILD_BIN points worker-build at our wrapper, which adds `--external:`
 # flags so postgres.js / mysql2 bundle cleanly under `nodejs_compat`.
 # NO_MINIFY keeps wasm-bindgen identifiers unmangled so jspi-patch.mjs can
 # find its anchor patterns by name.
-command = "cargo install -q worker-build && ESBUILD_BIN=$PWD/scripts/esbuild-wrapper.sh NO_MINIFY=1 worker-build --release && node jspi-patch.mjs"
+# worker-build is pinned to match the `worker` crate (0.8.3): 0.8.5 passes
+# `--force-enable-abort-handler` to wasm-bindgen, which fails on this setup
+# ("externref table required for catch wrappers").
+command = "cargo install -q worker-build --version 0.8.3 && ESBUILD_BIN=$PWD/scripts/esbuild-wrapper.sh NO_MINIFY=1 worker-build --release && node jspi-patch.mjs"
 
 # ─── KV namespaces ─────────────────────────────────────────────────────
 # Create these via `wrangler kv namespace create SESSIONS` and paste the

@@ -214,8 +214,8 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -225,8 +225,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "indexmap",
  "js-sys",
@@ -241,8 +241,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-compiler"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "cfml-common",
  "log",
@@ -251,8 +251,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-config"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "indexmap",
  "log",
@@ -262,9 +262,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "cfml-qoq"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
+dependencies = [
+ "cfml-common",
+ "indexmap",
+ "rayon",
+ "regex",
+ "rustc-hash",
+]
+
+[[package]]
 name = "cfml-stdlib"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "aes",
  "blowfish",
@@ -288,14 +300,15 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "anyhow",
  "cfml-codegen",
  "cfml-common",
  "cfml-compiler",
  "cfml-config",
+ "cfml-qoq",
  "chrono",
  "indexmap",
  "log",
@@ -310,8 +323,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.50.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.50.0#9173a1d16b28c21880648f7934c5e9c48f84b4be"
+version = "0.146.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.146.0#389503d3ed3baa760ec68c6bdd779259112a862a"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -367,6 +380,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "crossbeam-deque"
+version = "0.8.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dd111b7b7f7d55b72c0a6ae361660ee5853c9af73f70c3c2ef6858b950e2e51"
+dependencies = [
+ "crossbeam-epoch",
+ "crossbeam-utils",
+]
+
+[[package]]
+name = "crossbeam-epoch"
+version = "0.9.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b82ac4a3c2ca9c3460964f020e1402edd5753411d7737aa39c3714ad1b5420e"
+dependencies = [
+ "crossbeam-utils",
+]
+
+[[package]]
+name = "crossbeam-utils"
+version = "0.8.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
+
+[[package]]
 name = "crypto-common"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -406,6 +444,12 @@ dependencies = [
  "quote",
  "syn 2.0.117",
 ]
+
+[[package]]
+name = "either"
+version = "1.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 
 [[package]]
 name = "equivalent"
@@ -1017,6 +1061,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom 0.2.17",
+]
+
+[[package]]
+name = "rayon"
+version = "1.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb39b166781f92d482534ef4b4b1b2568f42613b53e5b6c160e24cfbfa30926d"
+dependencies = [
+ "either",
+ "rayon-core",
+]
+
+[[package]]
+name = "rayon-core"
+version = "1.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22e18b0f0062d30d4230b2e85ff77fdfe4326feb054b9783a3460d8435c8ab91"
+dependencies = [
+ "crossbeam-deque",
+ "crossbeam-utils",
 ]
 
 [[package]]
