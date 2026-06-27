@@ -47,6 +47,15 @@
         <a class="go" href="/cfml.cfm">Open /cfml.cfm &rarr;</a>
     </div>
     <div class="card">
+        <h3>/echo/ <span class="tag">test server</span></h3>
+        <div class="meta">HTTP echo for cfhttp tests</div>
+        <p>An always-on HTTP echo service the RustCFML engine test-suite hits
+        in place of the flaky <code>httpbin.org</code>. Mirrors the request as
+        JSON, reflects headers, and returns arbitrary status codes — all from
+        the edge.</p>
+        <a class="go" href="/echo/">Open /echo/ &rarr;</a>
+    </div>
+    <div class="card">
         <h3>/db.cfm <span class="tag">hyperdrive</span></h3>
         <div class="meta">SQL via Hyperdrive</div>
         <p>Runs a tiny <code>SELECT</code> through Hyperdrive (Postgres or

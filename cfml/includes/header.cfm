@@ -300,6 +300,7 @@ table.q td { color: var(--text); font-family: var(--font-mono); }
         <a class="nav-btn <cfif request.activeNav eq "static">active</cfif>" href="/static.cfm">/static — no cookie</a>
         <a class="nav-btn <cfif request.activeNav eq "session">active</cfif>" href="/session.cfm">/session — writes</a>
         <a class="nav-btn <cfif request.activeNav eq "cfml">active</cfif>" href="/cfml.cfm">/cfml — language samples</a>
+        <a class="nav-btn <cfif request.activeNav eq "echo">active</cfif>" href="/echo/">/echo — HTTP test server</a>
     </div>
 </cfif>
 </cfoutput>

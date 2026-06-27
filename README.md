@@ -12,6 +12,7 @@ A reference Cloudflare Workers host for **[RustCFML](https://github.com/RustCFML
 - **Durable Object–backed application scope** with strong consistency across regions.
 - **Cron-driven KV tidy-up** that deletes expired session blobs on a configurable schedule. (`onSessionEnd` is deliberately not implemented on this host — see notes below.)
 - **`<cfquery>` against Postgres or MySQL via Cloudflare Hyperdrive**, using JSPI to make the underlying async driver look synchronous to CFML. Dispatched through `postgres` (postgres.js) or `mysql2/promise`, selected from the Hyperdrive binding's `connectionString` prefix.
+- **An `/echo/` HTTP test server** — an always-on request mirror used by the [RustCFML engine test-suite](https://github.com/RustCFML/RustCFML) to exercise `<cfhttp>` in place of the flaky public `httpbin.org`. See [The `/echo/` HTTP test server](#the-echo-http-test-server) below.
 
 ## Layout
 
@@ -21,6 +22,7 @@ A reference Cloudflare Workers host for **[RustCFML](https://github.com/RustCFML
 | `build.rs` | Walks `cfml/` at build time and emits a static `CFML_FILES` table. |
 | `cfml/Application.cfc` | Sample app demonstrating `onApplicationStart`, `onSessionStart`, `onSessionEnd`. |
 | `cfml/index.cfm` | Sample page reading from session + application scope. |
+| `cfml/echo/` | HTTP test server (request mirror, header reflector, status endpoint) for the RustCFML `<cfhttp>` suite. |
 | `wrangler.toml` | Bindings + cron trigger. Edit the `<paste-id-here>` placeholders. |
 
 ## Getting Started
@@ -65,6 +67,26 @@ The fix in `cfml-worker` (introduced for Hyperdrive support):
 4. The post-build patch (`jspi-patch.mjs`) installs the promising wrapper on `globalThis.__cfmlJspi.runSync`, bypasses the wasm-bindgen JS adapter for the Suspending import, hoists CommonJS `__require("node:*")` calls into real ESM imports (so `postgres` / `mysql2` bundle under `nodejs_compat`), and wires `setEnv` / `clearEnv` around the fetch entry.
 
 A smoke test at `/__cfml_smoke` bypasses the entire CFML execution and calls the Hyperdrive Suspending directly from a sync wasm activation — handy for isolating JSPI plumbing from CFML semantics when debugging.
+
+## The `/echo/` HTTP test server
+
+The RustCFML engine's `<cfhttp>` test-suite needs a live remote HTTP server to call. It used to hit the public `httpbin.org`, which was flaky (rate limits, downtime) and produced false-red test runs. This worker hosts a purpose-built replacement under `/echo/` — generic, no engine-specific behaviour, and always-on at the edge.
+
+| Endpoint | Behaviour |
+|---|---|
+| `GET\|POST\|PUT\|PATCH\|DELETE /echo/request.cfm` | Returns a JSON mirror of the request: `{method, url, path, queryString, args, form, headers, cookies, body, userAgent}`. |
+| `GET /echo/response-headers.cfm?Name=Value` | Echoes each query param back as a response header of the same name; also returns the map as JSON under `reflected`. |
+| `GET /echo/status.cfm?code=NNN` | Responds with the given HTTP status code (default 200) and a `{"status":NNN}` body. |
+| `GET /echo/` | Human-readable docs page for the above. |
+
+Try it:
+
+```bash
+curl -s https://rustcfml-worker.rustcfml.workers.dev/echo/request.cfm?foo=bar
+curl -si https://rustcfml-worker.rustcfml.workers.dev/echo/response-headers.cfm?X-Demo=hi | grep -i x-demo
+```
+
+The corresponding test in the engine repo is `tests/stdlib/test_cfhttp.cfm`; it points at the deployed worker and has a reachability guard so it skips (rather than fails) if the endpoints aren't reachable. **After changing anything under `cfml/echo/`, redeploy (`wrangler deploy`) so the engine suite picks it up** — the test asserts against the live deployment, not your local checkout.
 
 ## Session tidy-up cadence
 
