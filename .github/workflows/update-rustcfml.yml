@@ -9,8 +9,9 @@ name: Update RustCFML
 
 on:
   schedule:
-    # Every day at 07:00 UTC. Adjust the cron to poll more/less often.
-    - cron: "0 7 * * *"
+    # TEMPORARY: every 5 minutes for testing. Change back to a sane cadence
+    # (e.g. "0 */6 * * *" for every 6 hours) once verified.
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 permissions:
