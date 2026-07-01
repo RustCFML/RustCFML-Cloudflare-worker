@@ -72,6 +72,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "bit-set"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08807e080ed7f9d5433fa9b275196cfc35414f66a0c79d864dc51a0d825231a3"
+dependencies = [
+ "bit-vec",
+]
+
+[[package]]
+name = "bit-vec"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e764a1d40d510daf35e07be9eb06e75770908c27d411ee6c92109c9840eaaf7"
+
+[[package]]
 name = "bitflags"
 version = "2.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -214,8 +229,8 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -225,8 +240,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "indexmap",
  "js-sys",
@@ -241,8 +256,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-compiler"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "cfml-common",
  "log",
@@ -251,8 +266,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-config"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "indexmap",
  "log",
@@ -263,8 +278,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-qoq"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "cfml-common",
  "indexmap",
@@ -275,8 +290,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "aes",
  "blowfish",
@@ -285,6 +300,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "des",
+ "fancy-regex",
  "hmac",
  "iana-time-zone",
  "indexmap",
@@ -301,8 +317,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "anyhow",
  "cfml-codegen",
@@ -325,8 +341,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.325.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.325.0#426cfe3e80326e8d51b71471297c9551b08fee26"
+version = "0.380.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.380.0#2c8f10d8c39518c5eb70a88d10f1150edde62653"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -482,6 +498,17 @@ name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
+
+[[package]]
+name = "fancy-regex"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1e1dacd0d2082dfcf1351c4bdd566bbe89a2b263235a2b50058f1e130a47277"
+dependencies = [
+ "bit-set",
+ "regex-automata",
+ "regex-syntax",
+]
 
 [[package]]
 name = "fastrand"
