@@ -9,9 +9,8 @@ name: Update RustCFML
 
 on:
   schedule:
-    # TEMPORARY: every 5 minutes for testing. Change back to a sane cadence
-    # (e.g. "0 */6 * * *" for every 6 hours) once verified.
-    - cron: "*/5 * * * *"
+    # Poll once per hour.
+    - cron: "0 * * * *"
   workflow_dispatch: {}
 
 permissions:
