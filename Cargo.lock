@@ -435,6 +435,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 
 [[package]]
+name = "caseless"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b6fd507454086c8edfd769ca6ada439193cdb209c7681712ef6275cccbfe5d8"
+dependencies = [
+ "unicode-normalization",
+]
+
+[[package]]
 name = "cbc"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -469,8 +478,8 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -478,31 +487,32 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "chrono",
+ "chrono-tz",
  "indexmap",
  "js-sys",
  "log",
  "parking_lot",
- "rustc-hash",
+ "rustc-hash 1.1.0",
  "serde",
  "wasm-bindgen",
 ]
 
 [[package]]
 name = "cfml-compiler"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "cfml-common",
 ]
 
 [[package]]
 name = "cfml-config"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "indexmap",
  "log",
@@ -514,24 +524,24 @@ dependencies = [
 [[package]]
 name = "cfml-module-abi"
 version = "0.1.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 
 [[package]]
 name = "cfml-qoq"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "cfml-common",
  "indexmap",
  "rayon",
  "regex",
- "rustc-hash",
+ "rustc-hash 1.1.0",
 ]
 
 [[package]]
 name = "cfml-sanitize"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "ego-tree",
  "quick-xml",
@@ -541,8 +551,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "ab_glyph",
  "aes",
@@ -554,6 +564,7 @@ dependencies = [
  "cfml-config",
  "chrono",
  "chrono-tz",
+ "comrak",
  "des",
  "ego-tree",
  "fancy-regex",
@@ -586,8 +597,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -610,7 +621,7 @@ dependencies = [
  "regex",
  "rsa",
  "rust_decimal",
- "rustc-hash",
+ "rustc-hash 1.1.0",
  "serde",
  "serde_json",
  "sha1",
@@ -620,8 +631,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.717.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.717.0#06b685fe523597641baf0cae6511fbe1e463ab5f"
+version = "0.719.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.719.0#40981163e324aaf3e135ccfa627a23c7a6f50a04"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -702,6 +713,23 @@ name = "color_quant"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
+
+[[package]]
+name = "comrak"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2544c4d6b6da7d54e95ac2833b464bf3dffa0666237868f2bf4ec5e11c9ba8cc"
+dependencies = [
+ "caseless",
+ "entities",
+ "finl_unicode",
+ "memchr-n",
+ "phf 0.14.0",
+ "phf_codegen 0.14.0",
+ "rustc-hash 2.1.3",
+ "smallvec",
+ "typed-arena",
+]
 
 [[package]]
 name = "const-oid"
@@ -958,6 +986,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "entities"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5320ae4c3782150d900b79807611a59a99fc9a1d61d686faafc24b93fc8d7ca"
+
+[[package]]
 name = "equator"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1033,6 +1067,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "fearless_simd"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3772b63c40606beea8fe1f7b06a60de27ceb9bfc2d9dad3427368ca41dc7e62"
+
+[[package]]
+name = "fearless_simd_macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e91d94c6885390b81782d7ee60fd6583b33907333a8b340de25ccf468353315"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.6",
+]
+
+[[package]]
 name = "ff"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1047,6 +1098,12 @@ name = "find-msvc-tools"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
+
+[[package]]
+name = "finl_unicode"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80bb028c8b4148c9ee0cca68fcd9add6044e81d3619f48577ddf13a263d047a2"
 
 [[package]]
 name = "flate2"
@@ -1838,6 +1895,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6b947ae49db0d222b1dbc6b113ce7248a3fc3a6ca21b696717bfc000ba4484d8"
 
 [[package]]
+name = "memchr-n"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1805571b8e7b1284ad43f27c88477840c1c0e5807c150021ac83d2228806540e"
+dependencies = [
+ "fearless_simd",
+ "fearless_simd_macros",
+]
+
+[[package]]
 name = "micromap"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2175,6 +2242,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "phf"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "010378780309880b08997fae13be7834dba947d36393bd372f2b1556deb2a2f6"
+dependencies = [
+ "phf_shared 0.14.0",
+ "serde",
+]
+
+[[package]]
 name = "phf_codegen"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2195,6 +2272,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "phf_codegen"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41b585a510fb76fdebead6897982ef2a03a21d8e6cbcca904999742a4afc6ffe"
+dependencies = [
+ "phf_generator 0.14.0",
+ "phf_shared 0.14.0",
+]
+
+[[package]]
 name = "phf_generator"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2212,6 +2299,16 @@ checksum = "2cbb1126afed61dd6368748dae63b1ee7dc480191c6262a3b4ff1e29d86a6c5b"
 dependencies = [
  "fastrand",
  "phf_shared 0.12.1",
+]
+
+[[package]]
+name = "phf_generator"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aeb62e0959d5a1bebc965f4d15d9e2b7cea002b6b0f5ba8cde6cc26738467100"
+dependencies = [
+ "fastrand",
+ "phf_shared 0.14.0",
 ]
 
 [[package]]
@@ -2258,6 +2355,15 @@ checksum = "06005508882fb681fd97892ecff4b7fd0fee13ef1aa569f8695dae7ab9099981"
 dependencies = [
  "siphasher",
  "uncased",
+]
+
+[[package]]
+name = "phf_shared"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6fd9027e2d9319be6349febd1db4e8d02aa544921200c9b777720ac34a3aa89"
+dependencies = [
+ "siphasher",
 ]
 
 [[package]]
@@ -2720,7 +2826,7 @@ checksum = "2c9283685feec7d69af75fb0e858d5e7378f33fe4fc699383b2916ab9273e03c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.2",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -2867,6 +2973,12 @@ name = "rustc-hash"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
+
+[[package]]
+name = "rustc-hash"
+version = "2.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6b1e7f9a428571be2dc5bc0505c13fb6bf936822b894ec87abf8a08a4e51742d"
 
 [[package]]
 name = "rustcfml-worker-host"
@@ -3274,9 +3386,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "3.0.2"
+version = "3.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a207d6d6a2b7fc470b80443726053f18a2481b7e1eee970597051596567987a3"
+checksum = "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3348,7 +3460,7 @@ checksum = "43cbfe0cf76104d42a574802844187e84a305e531ed54455f11fbde0f10541cd"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.2",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -3436,6 +3548,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
 
 [[package]]
+name = "typed-arena"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6af6ae20167a9ece4bcb41af5b80f8a1f1df981f6391189ce00fd257af04126a"
+
+[[package]]
 name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3461,6 +3579,15 @@ name = "unicode-ident"
 version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
+
+[[package]]
+name = "unicode-normalization"
+version = "0.1.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fd4f6878c9cb28d874b009da9e8d183b5abc80117c40bbd187a1fde336be6e8"
+dependencies = [
+ "tinyvec",
+]
 
 [[package]]
 name = "unicode-width"
