@@ -122,9 +122,6 @@ name = "arbitrary"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d036a3c4ab069c7b410a2ce876bd74808d2d0888a82667669f8e783a898bf1"
-dependencies = [
- "derive_arbitrary",
-]
 
 [[package]]
 name = "arg_enum_proc_macro"
@@ -478,8 +475,8 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
@@ -487,8 +484,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-common"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "chrono",
  "chrono-tz",
@@ -503,16 +500,16 @@ dependencies = [
 
 [[package]]
 name = "cfml-compiler"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "cfml-common",
 ]
 
 [[package]]
 name = "cfml-config"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "indexmap",
  "log",
@@ -524,12 +521,12 @@ dependencies = [
 [[package]]
 name = "cfml-module-abi"
 version = "0.1.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 
 [[package]]
 name = "cfml-qoq"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "cfml-common",
  "indexmap",
@@ -540,8 +537,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-sanitize"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "ego-tree",
  "quick-xml",
@@ -551,8 +548,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "ab_glyph",
  "aes",
@@ -597,8 +594,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -631,8 +628,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.741.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.741.0#69af001e4c45be6ea6b70d6cc5fc1d3259206de4"
+version = "0.742.1"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.1#54fcd3611209220ef88a42638e4f77fedcd3c64f"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -860,17 +857,6 @@ checksum = "e7c1832837b905bbfb5101e07cc24c8deddf52f93225eee6ead5f4d63d53ddcb"
 dependencies = [
  "const-oid",
  "zeroize",
-]
-
-[[package]]
-name = "derive_arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e567bd82dcff979e4b03460c307b3cdc9e96fde3d73bed1496d2bc75d9dd62a"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
 ]
 
 [[package]]
@@ -1113,6 +1099,7 @@ checksum = "843fba2746e448b37e26a819579957415c8cef339bf08564fe8b7ddbd959573c"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
+ "zlib-rs",
 ]
 
 [[package]]
@@ -1962,6 +1949,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 
 [[package]]
+name = "nix"
+version = "0.31.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf20d2fde8ff38632c426f1165ed7436270b44f199fc55284c38276f9db47c3d"
+dependencies = [
+ "bitflags",
+ "cfg-if",
+ "cfg_aliases",
+ "libc",
+]
+
+[[package]]
 name = "no_std_io2"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2578,9 +2577,9 @@ checksum = "a993555f31e5a609f617c12db6250dedcac1b0a85076912c436e6fc9b2c8e6a3"
 
 [[package]]
 name = "quick-xml"
-version = "0.36.2"
+version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
+checksum = "e660451e55124f798a69a5af3f49ccfbefbd41910eefd25caf2393e1f3473ec1"
 dependencies = [
  "memchr",
 ]
@@ -3554,6 +3553,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6af6ae20167a9ece4bcb41af5b80f8a1f1df981f6391189ce00fd257af04126a"
 
 [[package]]
+name = "typed-path"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ce898823d8cd0f028662d2f349694b1af0a5cc9be83f1d213a00d3147445e1e"
+
+[[package]]
 name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3888,6 +3893,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "windows-sys"
+version = "0.61.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc"
+dependencies = [
+ "windows-link",
+]
+
+[[package]]
 name = "winnow"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4176,20 +4190,26 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "2.4.2"
+version = "9.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fabe6324e908f85a1c52063ce7aa26b68dcb7eb6dbc83a2d148403c9bc3eba50"
+checksum = "2886b00003a72c4ccee3f42cfc34908d33b2508a74d827dc2a4244706475c704"
 dependencies = [
- "arbitrary",
  "crc32fast",
- "crossbeam-utils",
- "displaydoc",
  "flate2",
+ "getrandom 0.4.2",
  "indexmap",
  "memchr",
- "thiserror 2.0.19",
+ "nix",
+ "typed-path",
+ "windows-sys",
  "zopfli",
 ]
+
+[[package]]
+name = "zlib-rs"
+version = "0.6.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b268e58e7c693d7c271f93ffc4ba3b380412554231c85bf61ca7af91042a4112"
 
 [[package]]
 name = "zmij"
