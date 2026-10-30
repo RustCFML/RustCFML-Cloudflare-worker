@@ -253,6 +253,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36eaf5d7b090263e8150820482d5d93cd964a81e4019913c972f4edcc6edb740"
+dependencies = [
+ "bincode_derive",
+ "serde",
+ "unty",
+]
+
+[[package]]
+name = "bincode_derive"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf95709a440f45e986983918d0e8a1f30a9b1df04918fc828670606804ac3c09"
+dependencies = [
+ "virtue",
+]
+
+[[package]]
 name = "bit-set"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -475,20 +495,22 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "cfml-codegen"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "cfml-common",
  "cfml-compiler",
+ "serde",
 ]
 
 [[package]]
 name = "cfml-common"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "chrono",
  "chrono-tz",
+ "iana-time-zone",
  "indexmap",
  "js-sys",
  "log",
@@ -500,16 +522,16 @@ dependencies = [
 
 [[package]]
 name = "cfml-compiler"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "cfml-common",
 ]
 
 [[package]]
 name = "cfml-config"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "indexmap",
  "log",
@@ -521,12 +543,12 @@ dependencies = [
 [[package]]
 name = "cfml-module-abi"
 version = "0.1.0"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 
 [[package]]
 name = "cfml-qoq"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "cfml-common",
  "indexmap",
@@ -537,8 +559,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-sanitize"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "ego-tree",
  "quick-xml",
@@ -548,8 +570,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-stdlib"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "ab_glyph",
  "aes",
@@ -594,9 +616,10 @@ dependencies = [
 
 [[package]]
 name = "cfml-vm"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
+ "bincode",
  "cfml-codegen",
  "cfml-common",
  "cfml-compiler",
@@ -628,8 +651,8 @@ dependencies = [
 
 [[package]]
 name = "cfml-worker"
-version = "0.742.1"
-source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.742.2#b610b80f6563d8b7594cbc846cce3d87988e1e47"
+version = "0.743.0"
+source = "git+https://github.com/RustCFML/RustCFML.git?tag=v0.743.0#212b4e6e08d0502a7a7ccc8498da071754ca229e"
 dependencies = [
  "cfml-codegen",
  "cfml-common",
@@ -3613,6 +3636,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861"
 
 [[package]]
+name = "unty"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d49784317cd0d1ee7ec5c716dd598ec5b4483ea832a2dced265471cc0f690ae"
+
+[[package]]
 name = "url"
 version = "2.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3673,6 +3702,12 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "virtue"
+version = "0.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "051eb1abcf10076295e815102942cc58f9d5e3b4560e46e53c21e8ff6f3af7b1"
 
 [[package]]
 name = "vsimd"
